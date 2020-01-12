@@ -36,6 +36,10 @@ namespace CRM.Models
 
         public string Role { get; set; }
 
+        // Need to convert to view model
+        [NotMapped]
+        public string TagName { get; set; }
+
         public List<ContactTag> Tags { get; set; } 
 
         public List<Note> Notes { get; set; }

@@ -1,53 +1,60 @@
 ﻿@model CRM.Models.Contact
 
-@{
-    ViewData["Title"] = "Details";
+@functions{
+    string PrintIfNotNull(string text)
+    {
+        if (!String.IsNullOrEmpty(text))
+        {
+            return text;
+        }
+        else
+        {
+            return "";
+        }
+    }
+
 }
+<div class="container">
+    <div class="row">
+        @*Column to list and add tags*@
+        <div class="col-md-4 p-2 m-3 border-right">
+            <form asp-controller="Tags" asp-action="AddTag" asp-route-Id="@Model.Id">
+                <div id="autocomplete">
+                    <input name="tagName" class="form-control" id="tag-input" />
+                </div>
+                
+            </form>
+            <div class="mt-4 tags">
+                @foreach (ContactTag tag in Model.Tags)
+                {
+                    <div class="tag"><span class="delete-tag" id=@tag.Id>x</span>@Html.DisplayFor(item => tag.Tag.Name)</div>
+                }
+            </div>
+        </div>
 
-<h1>Details</h1>
-
-<div>
-    <h4>Contact</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.FirstName)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.FirstName)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.LastName)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.LastName)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.PhoneNumber)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.PhoneNumber)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Email)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Email)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Organization)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Organization)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Role)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Role)
-        </dd>
-    </dl>
+        @*Column to list contact info*@
+        <div class="col-md-6 p-2 m-1">
+            <h4>@Html.DisplayFor(model => model.FullName)</h4>
+            <p>@Html.DisplayNameFor(model => model.Organization): @PrintIfNotNull(Model.Organization)</p>
+            <p>@Html.DisplayNameFor(model => model.Role): @PrintIfNotNull(Model.Role)</p>
+            <p>@Html.DisplayNameFor(model => model.Email): <a href="mailto:{@Model.Email}">@PrintIfNotNull(Model.Email)</a></p>
+            <p>@Html.DisplayNameFor(model => model.PhoneNumber): @PrintIfNotNull(Model.PhoneNumber)</p>
+        </div>
+    </div>
+    <div class="row card-group">
+        @foreach (Note note in Model.Notes)
+        {
+            <div class="card p-2 m-2">
+                <div class="card-body">
+                    @Html.DisplayFor(item => note.Text)
+                </div>
+            </div>
+        }
+    </div>
 </div>
+
+
+
 <div>
     <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
     <a asp-action="Index">Back to List</a>

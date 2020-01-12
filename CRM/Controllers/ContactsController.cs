@@ -34,6 +34,9 @@ namespace CRM.Controllers
             }
 
             var contact = await _context.Contact
+                .Include(c => c.Notes)
+                .Include(c => c.Tags)
+                    .ThenInclude(ct => ct.Tag)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (contact == null)
             {

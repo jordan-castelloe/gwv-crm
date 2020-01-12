@@ -19,10 +19,61 @@ namespace CRM.Controllers
             _context = context;
         }
 
-        // GET: Tags
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> AddTag(string tagName, [FromRoute] int id)
         {
-            return View(await _context.Tag.ToListAsync());
+            Tag tagFromDB= await _context.Tag.FirstOrDefaultAsync(tag => tag.Name.ToLower() == tagName.ToLower());
+            int tagId = tagFromDB != null ? tagFromDB.Id : 0;
+            bool isItAlreadyAssigned = false;
+            if (tagFromDB == null)
+            {
+                Tag newTag = new Tag()
+                {
+                    Name = tagName
+                };
+                _context.Add(newTag);
+                await _context.SaveChangesAsync();
+                tagId = newTag.Id;
+            } else
+            {
+                isItAlreadyAssigned = _context.ContactTag
+                     .Include(ct => ct.Tag)
+                     .Any(ct => ct.Tag.Name == tagName);
+            }
+            
+            if(tagId != 0 && !isItAlreadyAssigned)
+            {
+                ContactTag newAssignment = new ContactTag()
+                {
+                    TagId = tagId,
+                    ContactId = id
+
+                };
+                _context.Add(newAssignment);
+                await _context.SaveChangesAsync();
+            }
+            return RedirectToAction("Details", "Contacts", new { id = id.ToString()});
+
+
+        }
+
+        public async Task DeleteTag(int id)
+        {
+            var assignedTag = await _context.ContactTag.FindAsync(id);
+            _context.ContactTag.Remove(assignedTag);
+            await _context.SaveChangesAsync();
+            
+        }
+        // GET: Tags
+        public async Task<IActionResult> ListTags(string q)
+        {
+            List<Tag> tags = await _context.Tag.ToListAsync();
+
+            if (q != "" && q != null)
+            {
+                tags = tags.Where(tag => tag.Name.Contains(q)).ToList();
+            }
+            
+            return Ok(tags);
         }
 
         // GET: Tags/Details/5
