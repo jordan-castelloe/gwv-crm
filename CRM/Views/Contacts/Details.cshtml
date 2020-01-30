@@ -19,10 +19,11 @@
         @*Column to list and add tags*@
         <div class="col-md-4 p-2 m-3 border-right">
             <form asp-controller="Tags" asp-action="AddTag" asp-route-Id="@Model.Id">
-                <div id="autocomplete">
-                    <input name="tagName" class="form-control" id="tag-input" />
+
+                <input autocomplete="off" name="tagName" class="form-control tag-input" id=@Model.Id />
+                <div class="autocomplete hidden m-t-0 p-2 border-1" id="autocomplete">
                 </div>
-                
+
             </form>
             <div class="mt-4 tags">
                 @foreach (ContactTag tag in Model.Tags)

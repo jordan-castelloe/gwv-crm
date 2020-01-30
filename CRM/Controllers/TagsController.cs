@@ -19,9 +19,11 @@ namespace CRM.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> AddTag(string tagName, [FromRoute] int id)
+        [HttpPost]
+        public async Task<IActionResult> AddTag([FromBody] string tagName, [FromRoute] int id)
         {
-            Tag tagFromDB= await _context.Tag.FirstOrDefaultAsync(tag => tag.Name.ToLower() == tagName.ToLower());
+            
+           Tag tagFromDB= await _context.Tag.FirstOrDefaultAsync(tag => tag.Name.ToLower() == tagName.ToLower());
             int tagId = tagFromDB != null ? tagFromDB.Id : 0;
             bool isItAlreadyAssigned = false;
             if (tagFromDB == null)
@@ -70,7 +72,7 @@ namespace CRM.Controllers
 
             if (q != "" && q != null)
             {
-                tags = tags.Where(tag => tag.Name.Contains(q)).ToList();
+                tags = tags.Where(tag => tag.Name.ToLower().Contains(q.ToLower())).ToList();
             }
             
             return Ok(tags);
